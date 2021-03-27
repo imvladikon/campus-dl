@@ -7,10 +7,10 @@ import json
 
 import pytest
 
-from edx_dl.common import DEFAULT_FILE_FORMATS
+from campus_dl.common import DEFAULT_FILE_FORMATS
 
-from edx_dl.parsing import (
-    edx_json2srt,
+from campus_dl.parsing import (
+    campus_json2srt,
     ClassicEdXPageExtractor,
     CurrentEdXPageExtractor,
     is_youtube_url,
@@ -43,13 +43,13 @@ def test_empty_json_subtitle():
 def test_subtitles_from_json(file, expected):
     with open(file) as f:
         json_contents = json.loads(f.read())
-    res = edx_json2srt(json_contents)
+    res = campus_json2srt(json_contents)
     assert res == expected
 
 
 # Test extraction of video/other assets from HTML
 def test_extract_units_from_html_single_unit_multiple_subs():
-    site = 'https://courses.edx.org'
+    site = 'https://courses.campus.gov.il'
     with open("test/html/single_unit_multiple_subs.html", "r") as f:
         units = CurrentEdXPageExtractor().extract_units_from_html(f.read(),
                                                                   site,
@@ -61,7 +61,7 @@ def test_extract_units_from_html_single_unit_multiple_subs():
 
 
 def test_extract_multiple_units_multiple_resources():
-    site = 'https://courses.edx.org'
+    site = 'https://courses.campus.gov.il'
     with open("test/html/multiple_units.html", "r") as f:
         units = CurrentEdXPageExtractor().extract_units_from_html(f.read(),
                                                                   site,
@@ -75,7 +75,7 @@ def test_extract_multiple_units_multiple_resources():
 
 
 def test_extract_multiple_units_no_youtube_ids():
-    site = 'https://courses.edx.org'
+    site = 'https://courses.campus.gov.il'
     with open("test/html/multiple_units_no_youtube_ids.html", "r") as f:
         units = ClassicEdXPageExtractor().extract_units_from_html(f.read(),
                                                                   site,
@@ -85,7 +85,7 @@ def test_extract_multiple_units_no_youtube_ids():
 
 
 def test_extract_multiple_units_youtube_link():
-    site = 'https://courses.edx.org'
+    site = 'https://courses.campus.gov.il'
     with open("test/html/multiple_units_youtube_link.html", "r") as f:
         units = CurrentEdXPageExtractor().extract_units_from_html(f.read(),
                                                                   site,
@@ -94,7 +94,7 @@ def test_extract_multiple_units_youtube_link():
 
 
 def test_extract_multiple_units_multiple_youtube_videos():
-    site = 'https://courses.edx.org'
+    site = 'https://courses.campus.gov.il'
     with open("test/html/multiple_units_multiple_youtube_videos.html", "r") as f:
         units = CurrentEdXPageExtractor().extract_units_from_html(f.read(),
                                                                   site,
@@ -110,7 +110,7 @@ def test_extract_multiple_units_multiple_youtube_videos():
     ]
 )
 def test_extract_sections(file, num_sections_expected, num_subsections_expected):
-    site = 'https://courses.edx.org'
+    site = 'https://courses.campus.gov.il'
     with open(file, "r") as f:
         sections = CurrentEdXPageExtractor().extract_sections_from_html(f.read(), site)
         assert len(sections) == num_sections_expected

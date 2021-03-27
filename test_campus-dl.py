@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from edx_dl import edx_dl, parsing
-from edx_dl.common import Unit, Video, DEFAULT_FILE_FORMATS
+from campus_dl import campus_dl, parsing
+from campus_dl.common import Unit, Video, DEFAULT_FILE_FORMATS
 
 
 def test_failed_login():
-    resp = edx_dl.edx_login(
-        edx_dl.LOGIN_API, edx_dl.edx_get_headers(), "guest", "guest")
+    resp = campus_dl.campus_login(
+        campus_dl.LOGIN_API, campus_dl.edx_get_headers(), "guest", "guest")
     assert not resp.get('success', False)
 
 
@@ -23,9 +23,9 @@ def test_remove_repeated_urls():
                                                                  DEFAULT_FILE_FORMATS)
 
         all_units = {url: units_extracted}
-        filtered_units = edx_dl.remove_repeated_urls(all_units)
-        num_all_urls = edx_dl.num_urls_in_units_dict(all_units)
-        num_filtered_urls = edx_dl.num_urls_in_units_dict(filtered_units)
+        filtered_units = campus_dl.remove_repeated_urls(all_units)
+        num_all_urls = campus_dl.num_urls_in_units_dict(all_units)
+        num_filtered_urls = campus_dl.num_urls_in_units_dict(filtered_units)
 
         assert num_all_urls == 18
         assert num_filtered_urls == 16
@@ -68,7 +68,7 @@ def test_extract_urls_from_units(all_units):
     Make sure that urls are grabbed from both mp4_urls and from
     resources_urls of Unit class.
     """
-    urls = edx_dl.extract_urls_from_units(all_units, '%(url)s')
+    urls = campus_dl.extract_urls_from_units(all_units, '%(url)s')
     expected = ['1\n', '2\n', '3\n']
     assert sorted(urls) == sorted(expected)
 
@@ -78,7 +78,7 @@ def test_extract_urls_from_units_unknown_units(unknown_units):
     Make sure that we only expect Units in the list of units.
     """
     with pytest.raises(TypeError):
-        edx_dl.extract_urls_from_units(unknown_units, '%(url)s')
+        campus_dl.extract_urls_from_units(unknown_units, '%(url)s')
 
 
 def test_extract_urls_from_units_unknown_videos(unknown_videos):
@@ -86,10 +86,10 @@ def test_extract_urls_from_units_unknown_videos(unknown_videos):
     Make sure that we only expect Video in the list of Unit videos.
     """
     with pytest.raises(TypeError):
-        edx_dl.extract_urls_from_units(unknown_videos, '%(url)s')
+        campus_dl.extract_urls_from_units(unknown_videos, '%(url)s')
 
 
-def test_edx_get_subtitle():
+def test_campus_get_subtitle():
     """
     Make sure Stanford subtitle URLs are distinguished from EdX ones.
     """
@@ -109,14 +109,14 @@ def test_edx_get_subtitle():
     get_page_contents = lambda u, h: u
 
     expected = url
-    actual = edx_dl.edx_get_subtitle(url, headers, mock_get_page_contents, mock_get_page_contents_as_json)
+    actual = campus_dl.campus_get_subtitle(url, headers, mock_get_page_contents, mock_get_page_contents_as_json)
     assert expected == actual
 
     # Make sure Non-Stanford URLs still work
     url = "https://www.edx.org/could/be/more/realistic"
 
     expected = '0\n00:00:00,123 --> 00:00:00,456\nsubtitle content\n\n'
-    actual = edx_dl.edx_get_subtitle(url, headers, mock_get_page_contents, mock_get_page_contents_as_json)
+    actual = campus_dl.edx_get_subtitle(url, headers, mock_get_page_contents, mock_get_page_contents_as_json)
     assert expected == actual
 
 

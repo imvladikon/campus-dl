@@ -13,7 +13,7 @@ import sys
 
 from setuptools import setup
 
-from edx_dl._version import __version__
+from campus_dl._version import __version__
 
 
 def read_file(filename, alt=None):
@@ -57,29 +57,29 @@ trove_classifiers = [
 ]
 
 setup(
-    name='edx-dl',
+    name='campus-dl',
     version=__version__,
-    maintainer='Ismaël Mejía, Rogério Theodoro de Brito, Yuri Bochkarev',
-    maintainer_email='iemejia@gmail.com, rbrito@ime.usp.br, baltazar.bz@gmail.com',
+    maintainer='',
+    maintainer_email='',
 
     license='LGPL',
-    url='https://github.com/coursera-dl/edx-dl',
+    url='https://github.com/imvladikon/campus-dl',
 
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements,
     },
 
-    description='Simple tool to download video and lecture materials from edx.org.',
+    description='Simple tool to download video and lecture materials from campus.gov.il.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords=['edx-dl','edX', 'download', 'education', 'MOOCs', 'video'],
+    keywords=['campus-dl','campus', 'download', 'education', 'MOOCs', 'video'],
     classifiers=trove_classifiers,
 
-    packages=["edx_dl"],
+    packages=["campus_dl"],
     entry_points=dict(
         console_scripts=[
-            'edx-dl=edx_dl.edx_dl:main'
+            'campus-dl=campus_dl.campus_dl:main'
         ]
     ),
 

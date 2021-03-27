@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from edx_dl import edx_dl
+from campus_dl import campus_dl
 
 
 if __name__ == '__main__':
-    edx_dl.main()
+    campus_dl.main()
