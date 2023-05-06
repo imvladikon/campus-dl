@@ -170,7 +170,8 @@ class ExitCode(object):
     NO_DOWNLOADABLE_VIDEO = 6
 
 
-YOUTUBE_DL_CMD = ['youtube-dl', '--ignore-config']
+# YOUTUBE_DL_CMD = ['youtube-dl', '--ignore-config']
+YOUTUBE_DL_CMD = ['yt-dlp', '--ignore-config']
 DEFAULT_CACHE_FILENAME = 'campus-dl.cache'
 DEFAULT_FILE_FORMATS = ['e?ps', 'pdf', 'txt', 'doc', 'xls', 'ppt',
                         'docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp', 'odg',
