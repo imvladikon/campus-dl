@@ -197,16 +197,21 @@ def campus_get_subtitle(url, headers,
     subtitles are available.
     """
     try:
-        if ';' in url:  # non-JSON format (e.g. Stanford)
-            return get_page_contents(url, headers)
+        content = get_page_contents(url, headers)
+        json_object = None
+        try:
+            json_object = json.loads(content)
+        except:
+            pass
+        if json_object is None:
+            return content
         else:
-            json_object = get_page_contents_as_json(url, headers)
             return campus_json2srt(json_object)
     except URLError as exception:
-        logging.warn('campus subtitles (error: %s)', exception)
+        logging.warning('campus subtitles (error: %s)', exception)
         return None
     except ValueError as exception:
-        logging.warn('campus subtitles (error: %s)', exception)
+        logging.warning('campus subtitles (error: %s)', exception)
         #TODO: fix unicode file name
         return None
 
