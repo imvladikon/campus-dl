@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from functools import lru_cache
 
 # This module contains generic functions, ideally useful to any other module
 from six.moves.urllib.request import urlopen, Request
 import sys
+
 if sys.version_info[0] >= 3:
     import html
 else:
-    from six.moves import html_parser    
+    from six.moves import html_parser
+
     html = html_parser.HTMLParser()
 
 import errno
@@ -16,6 +19,7 @@ import logging
 import os
 import string
 import subprocess
+import requests
 
 
 def get_filename_from_prefix(target_dir, filename_prefix):
@@ -45,6 +49,13 @@ def execute_command(cmd, args):
             logging.warn('External command error ignored: %s', e)
         else:
             raise e
+
+
+def has_hebrew(initial_name):
+    """
+    Check if a string contains Hebrew characters
+    """
+    return any(u"\u0590" <= c <= u"\u05EA" for c in initial_name)
 
 
 def directory_name(initial_name):
@@ -115,6 +126,44 @@ def mkdir_p(path, mode=0o777):
             raise
 
 
+class GoogleTranslate:
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update(self.make_header())
+        self.session.verify = False
+        self.url = "https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl={}&tl={}&q={}"
+
+    def make_header(self):
+        headers = dict()
+        headers["Accept"] = "*/*"
+        headers["Host"] = "clients5.google.com"
+        headers["Connection"] = "keep-alive"
+        headers["Upgrade-Insecure-Requests"] = "1"
+        headers[
+            "User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36"
+        headers["Content-Encoding"] = "gzip"
+        headers["Accept-Language"] = "en-US,en;q=0.9,ru;q=0.8,he;q=0.7"
+        headers["Content-Type"] = "application/json; charset=UTF-8"
+        return headers
+
+    @lru_cache(maxsize=100)
+    def translate(self, text, target='en', source='auto'):
+        url = self.url.format(source, target, text)
+        response = self.session.get(url)
+        response.encoding = response.apparent_encoding
+        json = response.json()
+        try:
+            # check if it's list of lists or list of strings
+            if isinstance(json[0], list):
+                return "\n".join(map(lambda p: p[0], json)).strip()
+            else:
+                return "\n".join(json).strip()
+        except:
+            pass
+        return text
+
+
 def clean_filename(s, minimal_change=False):
     """
     Sanitize a string to be used as a filename.
@@ -122,6 +171,8 @@ def clean_filename(s, minimal_change=False):
     characters that are problematic for filesystems (namely, ':', '/' and
     '\x00', '\n').
     """
+    if has_hebrew(s):
+        s = GoogleTranslate().translate(s, target='en', source='he')
 
     # First, deal with URL encoded strings
     h = html
@@ -143,4 +194,6 @@ def clean_filename(s, minimal_change=False):
 
     s = s.strip().replace(' ', '_')
     valid_chars = '-_.()%s%s' % (string.ascii_letters, string.digits)
-    return ''.join(c for c in s if c in valid_chars)
+    s = ''.join(c for c in s if c in valid_chars)
+    s = s.lower()
+    return s
