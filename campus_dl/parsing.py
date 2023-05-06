@@ -7,8 +7,12 @@ import re
 import json
 
 from datetime import timedelta, datetime
-
-from six.moves import html_parser
+import sys
+if sys.version_info[0] >= 3:
+    import html
+else:
+    from six.moves import html_parser    
+    html = html_parser.HTMLParser()
 from bs4 import BeautifulSoup as BeautifulSoup_
 
 from .common import Course, Section, SubSection, Unit, Video
@@ -288,7 +292,7 @@ class CurrentEdXPageExtractor(ClassicEdXPageExtractor):
         videos = []
         match_metadatas = re_metadata.findall(text)
         for match_metadata in match_metadatas:
-            metadata = html_parser.HTMLParser().unescape(match_metadata)
+            metadata = html.unescape(match_metadata)
             metadata = json.loads(html_parser.HTMLParser().unescape(metadata))
             video_youtube_url = None
             re_video_speed = re.compile(r'1.0\d+\:(?:.*?)(.{11})')
